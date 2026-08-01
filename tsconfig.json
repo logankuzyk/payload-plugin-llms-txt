@@ -4,9 +4,6 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "target": "ES2022",
-    "declaration": true,
-    "outDir": "dist",
-    "rootDir": "src",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noEmit": true
