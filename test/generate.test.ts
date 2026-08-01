@@ -128,6 +128,79 @@ describe('generateLlmsTxt', () => {
   })
 })
 
+describe('descriptionField fallback', () => {
+  const fallbackDoc = {
+    id: '1',
+    title: 'Fallback Post',
+    slug: 'fallback-post',
+    llmsDescription: 'Dedicated LLM description',
+    meta: { description: 'SEO description' },
+  }
+
+  it('prefers an earlier field in the array over a later one', async () => {
+    const payload = makeFakePayload({ docsByCollection: { posts: [fallbackDoc], projects: [] } })
+    const options: LlmsTxtPluginOptions = {
+      ...baseOptions,
+      collections: [
+        {
+          slug: 'posts',
+          descriptionField: ['llmsDescription', 'meta.description'],
+          urlPath: (doc) => `/posts/${doc.slug}`,
+          publishedOnly: false,
+        },
+      ],
+    }
+
+    const text = await generateLlmsTxt(payload, options)
+
+    expect(text).toContain('Dedicated LLM description')
+    expect(text).not.toContain('SEO description')
+  })
+
+  it('falls through to a later field when the earlier one is empty', async () => {
+    const payload = makeFakePayload({
+      docsByCollection: { posts: [{ id: '1', title: 'Fallback Post', slug: 'fallback-post', meta: { description: 'SEO description' } }], projects: [] },
+    })
+    const options: LlmsTxtPluginOptions = {
+      ...baseOptions,
+      collections: [
+        {
+          slug: 'posts',
+          descriptionField: ['llmsDescription', 'meta.description'],
+          urlPath: (doc) => `/posts/${doc.slug}`,
+          publishedOnly: false,
+        },
+      ],
+    }
+
+    const text = await generateLlmsTxt(payload, options)
+
+    expect(text).toContain('SEO description')
+  })
+
+  it('omits the description when every field in the array is empty', async () => {
+    const payload = makeFakePayload({
+      docsByCollection: { posts: [{ id: '1', title: 'Fallback Post', slug: 'fallback-post' }], projects: [] },
+    })
+    const options: LlmsTxtPluginOptions = {
+      ...baseOptions,
+      collections: [
+        {
+          slug: 'posts',
+          descriptionField: ['llmsDescription', 'meta.description'],
+          urlPath: (doc) => `/posts/${doc.slug}`,
+          publishedOnly: false,
+        },
+      ],
+    }
+
+    const text = await generateLlmsTxt(payload, options)
+
+    expect(text).toContain('- [Fallback Post](https://example.com/posts/fallback-post)')
+    expect(text).not.toContain('- [Fallback Post](https://example.com/posts/fallback-post):')
+  })
+})
+
 describe('generateLlmsFullTxt', () => {
   it('converts richtext content for collections with a contentField', async () => {
     const payload = makeFakePayload()

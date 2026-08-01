@@ -10,6 +10,19 @@ function getFieldValue(doc: Record<string, unknown>, path: string): string | und
   return typeof value === 'string' && value.length > 0 ? value : undefined
 }
 
+function resolveDescription(
+  doc: Record<string, unknown>,
+  descriptionField?: string | string[],
+): string | undefined {
+  if (!descriptionField) return undefined
+  const paths = Array.isArray(descriptionField) ? descriptionField : [descriptionField]
+  for (const path of paths) {
+    const value = getFieldValue(doc, path)
+    if (value) return value
+  }
+  return undefined
+}
+
 function labelFor(config: LlmsTxtCollectionConfig): string {
   if (config.label) return config.label
   const slug = config.slug.replace(/-/g, ' ')
@@ -71,9 +84,7 @@ export async function generateLlmsTxt(payload: Payload, options: LlmsTxtPluginOp
     for (const doc of docs) {
       const title = getFieldValue(doc, collectionConfig.titleField ?? 'title') ?? 'Untitled'
       const url = `${options.siteURL.replace(/\/$/, '')}${collectionConfig.urlPath(doc)}`
-      const description = collectionConfig.descriptionField
-        ? getFieldValue(doc, collectionConfig.descriptionField)
-        : undefined
+      const description = resolveDescription(doc, collectionConfig.descriptionField)
 
       lines.push(description ? `- [${title}](${url}): ${description}` : `- [${title}](${url})`)
     }
@@ -118,15 +129,11 @@ export async function generateLlmsFullTxt(payload: Payload, options: LlmsTxtPlug
           })
           lines.push(markdown, '')
         } catch {
-          const description = collectionConfig.descriptionField
-            ? getFieldValue(doc, collectionConfig.descriptionField)
-            : undefined
+          const description = resolveDescription(doc, collectionConfig.descriptionField)
           if (description) lines.push(description, '')
         }
       } else {
-        const description = collectionConfig.descriptionField
-          ? getFieldValue(doc, collectionConfig.descriptionField)
-          : undefined
+        const description = resolveDescription(doc, collectionConfig.descriptionField)
         if (description) lines.push(description, '')
       }
     }

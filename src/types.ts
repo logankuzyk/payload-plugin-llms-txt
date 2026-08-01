@@ -3,8 +3,12 @@ export interface LlmsTxtCollectionConfig {
   slug: string
   /** Field to use as the entry title. @default 'title' */
   titleField?: string
-  /** Dot-path field to use as the entry description in the index (e.g. 'meta.description'). */
-  descriptionField?: string
+  /**
+   * Dot-path field (e.g. 'meta.description'), or an ordered list of fallback fields,
+   * used as the entry description. When given an array, the first field with a
+   * non-empty value wins — e.g. ['llmsDescription', 'meta.description'].
+   */
+  descriptionField?: string | string[]
   /**
    * Name of a richText field to convert to Markdown for llms-full.txt.
    * Omit for collections without a single richText field (e.g. block-based layouts) —

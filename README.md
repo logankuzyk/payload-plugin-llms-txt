@@ -26,7 +26,10 @@ export default buildConfig({
       collections: [
         {
           slug: 'posts',
-          descriptionField: 'meta.description',
+          // Tries `llmsDescription` first, falls back to the SEO field when empty —
+          // useful when you're rolling out a dedicated LLM-facing description field
+          // without having to backfill every existing document immediately.
+          descriptionField: ['llmsDescription', 'meta.description'],
           contentField: 'content', // richText field, converted to Markdown for llms-full.txt
           urlPath: (doc) => `/posts/${doc.slug}`,
         },
@@ -84,7 +87,7 @@ For non-Next.js consumers, the plugin also registers `GET /llms.txt` and `GET /l
 | ------------------- | ----------------------------------- | -------------- | -------------------------------------------------------------------- |
 | `slug`               | `string`                            | —              | Collection slug.                                                   |
 | `titleField`         | `string`                            | `'title'`      | Field used as the entry title.                                     |
-| `descriptionField`   | `string`                            | —              | Dot-path field used as the index description (e.g. `'meta.description'`). |
+| `descriptionField`   | `string \| string[]`                | —              | Dot-path field used as the index description (e.g. `'meta.description'`), or an ordered array of fallback fields — the first one with a non-empty value wins (e.g. `['llmsDescription', 'meta.description']`). |
 | `contentField`       | `string`                            | —              | richText field name to convert to Markdown for `llms-full.txt`. Omit for block-based layouts (e.g. Payload's block-based Pages) — those entries stay index-only. |
 | `urlPath`            | `(doc) => string`                   | —              | Builds the document's public path.                                 |
 | `publishedOnly`      | `boolean`                           | `true`         | Filter to `_status: 'published'`. Set `false` for collections without drafts/versions. |
