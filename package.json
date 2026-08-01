@@ -1,6 +1,6 @@
 {
   "name": "payload-plugin-llms-txt",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Payload CMS plugin that generates llms.txt and llms-full.txt from your collections",
   "license": "MIT",
   "type": "module",
