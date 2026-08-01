@@ -1,0 +1,64 @@
+{
+  "name": "payload-plugin-llms-txt",
+  "version": "0.1.0",
+  "description": "Payload CMS plugin that generates llms.txt and llms-full.txt from your collections",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/logankuzyk/payload-plugin-llms-txt.git"
+  },
+  "keywords": [
+    "payload",
+    "payloadcms",
+    "payload-plugin",
+    "llms.txt",
+    "llms-full.txt"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./next": {
+      "types": "./dist/exports/next.d.ts",
+      "import": "./dist/exports/next.js",
+      "require": "./dist/exports/next.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "tsc --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build && npm test",
+    "changeset": "changeset",
+    "release": "npm run build && changeset publish"
+  },
+  "peerDependencies": {
+    "@payloadcms/richtext-lexical": "^3.0.0",
+    "next": "^15.0.0",
+    "payload": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.31.1",
+    "@payloadcms/richtext-lexical": "3.76.1",
+    "next": "15.4.11",
+    "payload": "3.76.1",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}
